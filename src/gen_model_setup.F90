@@ -87,6 +87,8 @@ subroutine read_namelist
   read (20,NML=diag_list)
   close (20)
 
+  !write(*,*) 'Read in namelist.io'
+
 #ifdef __recom              
   nmlfile ='namelist.recom' ! name of recom namelist file
   open (20,file=nmlfile)
@@ -100,14 +102,17 @@ subroutine read_namelist
   read (20,NML=paphotosynthesis)
   read (20,NML=paassimilation)
   read (20,NML=pairon_chem)
-  read (20,NML=painteraction)
+  !read (20,NML=painteraction)
+  !write(*,*) 'Read in painteraction'
   read (20,NML=pazooplankton)
+  write(*,*) 'Read in pazooplankton'
   read (20,NML=pasecondzooplankton)
   read (20,NML=pagrazingdetritus)
   read (20,NML=paaggregation)
   read (20,NML=padin_rho_N)
   read (20,NML=padic_rho_C1)
   read (20,NML=paphytoplankton_N)
+  !write(*,*) 'Read in paphytoplankton_N'
   read (20,NML=paphytoplankton_C)
   read (20,NML=paphytoplankton_ChlA)
   read (20,NML=padetritus_N)
@@ -116,10 +121,12 @@ subroutine read_namelist
   read (20,NML=paseczooloss)
   read (20,NML=pairon)
   read (20,NML=pacalc)
+  !write(*,*) 'Read in pacalc'
   read (20,NML=pabenthos_decay_rate)
   read (20,NML=paco2_flux_param)
   read (20,NML=paalkalinity_restoring)
   read (20,NML=paciso)
+  write(*,*) 'Read in paciso'
   close (20)
 #endif
 
