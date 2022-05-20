@@ -1,4 +1,4 @@
-subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,SinkVel,zF,PAR, mesh)
+subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,calc_diss_watercolumn,SinkVel,zF,PAR, mesh)
 
     use REcoM_declarations
     use REcoM_LocVar
@@ -37,6 +37,7 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,SinkVel,zF,PAR,
 
     real(kind=8),dimension(mesh%nl)          ,intent(in)    :: zF                   !< [m] Depth of fluxes
     real(kind=8),dimension(mesh%nl-1),intent(inout)         :: PAR
+    real(kind=8),dimension(mesh%nl-1),intent(inout)         :: calc_diss_watercolumn !CH
 
     real(kind=8)                                            :: net                  
 
@@ -164,6 +165,13 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,SinkVel,zF,PAR,
 
             calc_diss      = calc_diss_rate * SinkVel(k,ivdet) /20.d0 ! Dissolution rate of CaCO3 scaled by the sinking velocity at the current depth 0.005714   !20.d0/3500.d0
             calc_diss2     = calc_diss_rate2  ! Dissolution rate of CaCO3 for seczoo
+               
+            !CH
+            calc_diss_watercolumn(k) = calc_diss
+            
+            !write(*,*), SinkVel
+            !write(*,*), calc_diss
+            !if (mype==0) write(*,*),' sms(k,ivdet)', sms(k,ivdet)
 
             quota          =  PhyN / PhyC ! include variability of the N: C ratio, cellular chemical composition 
             recipquota     =  real(one) / quota

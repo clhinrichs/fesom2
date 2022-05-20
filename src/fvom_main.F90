@@ -274,7 +274,9 @@ type(t_mesh),             target, save :: mesh
 #if defined (__recom)
         if (use_REcoM) then
            if (mype==0 .and. n==1)  print *, achar(27)//'[46;1m'//'     --> call RECOM         '//achar(27)//'[0m'
+           write(*,*) 'Called RECOM'
            call compute_recom_diagnostics(1, mesh)
+           write(*,*) 'called compute_recom_diag'
         end if
 #endif
 

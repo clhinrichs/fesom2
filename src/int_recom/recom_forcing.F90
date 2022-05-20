@@ -1,7 +1,7 @@
 !===============================================================================
 ! REcoM_Forcing
 !===============================================================================
-subroutine REcoM_Forcing(zNodes, n, Nn, state, SurfSW, Loc_slp, Temp, Sali, PAR, mesh)
+subroutine REcoM_Forcing(zNodes, n, Nn, state, SurfSW, Loc_slp, Temp, Sali, calc_diss_watercolumn, PAR, mesh)
 
   use REcoM_declarations
   use REcoM_LocVar
@@ -37,6 +37,9 @@ subroutine REcoM_Forcing(zNodes, n, Nn, state, SurfSW, Loc_slp, Temp, Sali, PAR,
 
   Real(kind=8),dimension(mesh%nl-1)         :: Temp          ! [degrees C] Ocean temperature
   real(kind=8),dimension(mesh%nl-1)         :: PAR
+  real(kind=8),dimension(mesh%nl-1)         :: calc_diss_watercolumn
+
+
 
 ! Subroutine Depth
 
@@ -170,7 +173,7 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_sms'/
 !  addtiny(1:nn,3) = state(1:nn,idiasi)
 !  addtiny(1:nn,4) = state(1:nn,idetz2si)
 
-  call REcoM_sms(n, Nn, state, thick, recipthick, SurfSW, sms, Temp, SinkVel, zF, PAR, mesh)
+  call REcoM_sms(n, Nn, state, thick, recipthick, SurfSW, sms, Temp, SinkVel, zF, PAR, calc_diss_watercolumn, mesh)
 
 !  addtiny(1:nn,1) = (state(1:nn,isi)           - aux(1:nn,isi))
 !  addtiny(1:nn,2) = (state(1:nn,idetsi)        - aux(1:nn,idetsi))
@@ -251,9 +254,10 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> ciso after 
 !-------------------------------------------------------------------------------
 ! Diagnostics
   if (Diags) then
-	do idiags = one,8
+	do idiags = one,9
 	  LocDiags2D(idiags) = sum(diags3Dloc(1:nn,idiags) * thick(1:nn))
 	end do
+        write(*,*) 'Done with Diags'
   end if
 
 end subroutine REcoM_Forcing

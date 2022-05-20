@@ -481,6 +481,8 @@ Module REcoM_GloVar
   Real(kind=8),allocatable,dimension(:)   :: GlodPCO2surf       ! [mmol/m2/day] ocean-atmosphere  
   Real(kind=8),allocatable,dimension(:,:) :: GlodecayBenthos  ! [1/day] Decay rate of detritus in the benthic layer saved for oce_ale_tracer.F90
 
+  Real(kind=8),allocatable,dimension(:,:)   :: calc_diss3D    
+  
   Real(kind=8),allocatable,dimension(:,:)   :: GlowFluxDet    ! 
   Real(kind=8),allocatable,dimension(:,:)   :: GlowFluxPhy    ! 
   Real(kind=8),allocatable,dimension(:,:)   :: GlowFluxDia    ! 
@@ -517,6 +519,7 @@ Module REcoM_locVar
   Real(kind=8) :: o2ex(1)                     ! [mmol/m2/s] Flux of O2 into the ocean
   Real(kind=8) :: ULoc(1)                      ! Wind strength above current 2D node, change array size if used with mocsy input vector longer than one
   Real(kind=8) :: dpCO2surf(1)              ! [uatm] difference of oceanic pCO2 minus atmospheric pCO2
+  !Real(kind=8) :: calc_diss(1)  
 
 ! mocsy output -----------------------------------------------------------------------------------------------------------------------------
   Real(kind=8) :: co2flux(1)                   ! air-to-sea flux of CO2 [mol/(m^2 * s)]

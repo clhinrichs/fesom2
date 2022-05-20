@@ -52,13 +52,16 @@ subroutine recom(mesh)
   integer                    :: idiags
 
   real(kind=8)               :: Sali, net, net1, net2
-  real (kind=8), allocatable :: Temp(:),  zr(:), PAR(:)
+  real(kind=8), allocatable :: Temp(:),  zr(:), PAR(:)
   real(kind=8),  allocatable :: C(:,:)
+  real(kind=8),  allocatable :: calc_diss_watercolumn(:) !CH
+
   character(len=2)           :: tr_num_name
 #include "../associate_mesh.h"
 
   allocate(Temp(nl-1), zr(nl-1) , PAR(nl-1))
   allocate(C(nl-1,bgc_num))
+  allocate(calc_diss_watercolumn(nl-1))      
 
 
   if (.not. use_REcoM) return
@@ -124,6 +127,7 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> bio_fluxes'
 
      !!---- Biogeochemical tracers
      C(1:nzmax,1:bgc_num) = tr_arr(1:nzmax, n, 3:num_tracers)             
+     calc_diss_watercolumn(1:nzmax)    = calc_diss3D(1:nzmax, n)               
 
      !!---- Depth of the nodes in the water column 
      zr(1:nzmax) = Z_3d_n(1:nzmax, n)                          
@@ -144,7 +148,7 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
 ! ======================================================================================
 !******************************** RECOM FORCING ****************************************
 
-     call REcoM_Forcing(zr, n, nzmax, C, SW, Loc_slp, Temp, Sali, PAR, mesh)
+     call REcoM_Forcing(zr, n, nzmax, C, SW, Loc_slp, Temp, Sali, calc_diss_watercolumn, PAR, mesh)
 
      tr_arr(1:nzmax, n, 3:num_tracers)       = C(1:nzmax, 1:bgc_num)
 
@@ -173,6 +177,8 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
 
      PAR3D(1:nzmax,n)             = PAR(1:nzmax) !     PAR3D(inds(1:nn))   = PAR(1:nn)
    
+     calc_diss3D(1:nzmax,n)             = calc_diss_watercolumn(1:nzmax)  
+
      do idiags = 1,diags3d_num
        Diags3D(1:nzmax,n,idiags)  = Diags3Dloc(1:nzmax,idiags) ! 1=NPPnano, 2=NPPdia
      end do
@@ -180,10 +186,10 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
      deallocate(Diags3Dloc)
 
   end do
-
+write(*,*) 'Done with recom forcing in main'
 ! ======================================================================================
 !************************** EXCHANGE NODAL INFORMATION *********************************			
-
+write(*,*) 'starting exchange nodal info'
   do tr_num=3, bgc_num+2 
     call exchange_nod(tr_arr(:,:,tr_num))
   end do
@@ -218,10 +224,14 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
   call exchange_nod(AtmNInput)	
 !  call exchange_nod(DenitBen)	
   call exchange_nod(PAR3D)	
+  call exchange_nod(calc_diss3D) 
 !  do n=1, 2
 !     call exchange_nod(Diags3D(:,:,n))	
 !  end do
+
+write(*,*) 'Done with exhange nodal info'
 end subroutine recom
+
 ! ======================================================================================
 ! Alkalinity restoring to climatology                                 			*
 ! =========================================================================== bio_fluxes 
@@ -274,6 +284,7 @@ subroutine bio_fluxes(mesh)
 !  end if
 
   ! Alkalinity restoring to climatology
+  if (.not. restore_alkalinity .and. mype==0 .and. mstep==1) write(*,*), "restore_alkalinity is OFF"
   if (.not. restore_alkalinity) return
   do n=1, myDim_nod2D+eDim_nod2D
      relax_alk(n)=surf_relax_Alk*(Alk_surf(n)-tr_arr(1,n,2+ialk)) ! 1 temp, 2 salt

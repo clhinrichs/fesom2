@@ -179,6 +179,9 @@ end if
     end if  
 
     PAR3D(:,:) = 0.d0
+    allocate(calc_diss3D(nl-1,node_size))                   !CH
+    calc_diss3D(:,:)          = 0.d0
+
     DenitBen(:) = 0.d0
 
 
