@@ -82,6 +82,8 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> bio_fluxes'
 ! ======================================================================================
 !********************************* LOOP STARTS *****************************************			
 
+write(*,*) 'starting main loop'
+
   do n=1, myDim_nod2D  ! needs exchange_nod in the end
 !     if (ulevels_nod2D(n)>1) cycle 
 !            nzmin = ulevels_nod2D(n)
@@ -229,14 +231,14 @@ write(*,*) 'starting exchange nodal info'
 !     call exchange_nod(Diags3D(:,:,n))	
 !  end do
 
-write(*,*) 'Done with exhange nodal info'
+!write(*,*) 'Done with exhange nodal info'
 end subroutine recom
 
 ! ======================================================================================
 ! Alkalinity restoring to climatology                                 			*
 ! =========================================================================== bio_fluxes 
 subroutine bio_fluxes(mesh)
-
+  
   use REcoM_declarations
   use REcoM_LocVar
   use REcoM_GloVar
@@ -258,7 +260,7 @@ subroutine bio_fluxes(mesh)
   real(kind=WP)                     :: ralk, net
   type(t_mesh), intent(in) , target :: mesh
 #include "../associate_mesh.h"
-  
+ write(*,*) 'bio_flux before alk_restore' 
 !___________________________________________________________________
 ! on freshwater inflow/outflow or virtual alkalinity:
   ! 1. In zlevel & zstar the freshwater flux is applied in the update of the 
@@ -302,7 +304,7 @@ subroutine bio_fluxes(mesh)
 !     call integrate_nod(virtual_alk, net)
 !     virtual_alk=virtual_alk-net/ocean_area
 !  end if
-
+write(*,*) 'Starting with integrate node relax_alk'
 
   ! 3. restoring to Alkalinity climatology
   call integrate_nod(relax_alk, net, mesh)
@@ -320,5 +322,5 @@ subroutine bio_fluxes(mesh)
 !     write(*,*) '____________________________________________________________'
 !     write(*,*) ' --> relax_alk,  = ', relax_alk
 !  endif
-
+write(*,*) 'done with subroutine bio fluxes'
 end subroutine bio_fluxes

@@ -38,6 +38,8 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,calc_diss_water
     real(kind=8),dimension(mesh%nl)          ,intent(in)    :: zF                   !< [m] Depth of fluxes
     real(kind=8),dimension(mesh%nl-1),intent(inout)         :: PAR
     real(kind=8),dimension(mesh%nl-1),intent(inout)         :: calc_diss_watercolumn !CH
+    !real(kind=8),dimension(mesh%nl-1)                       :: calc_diss_watercolumn !CH
+    !real(kind=8),intent(inout)            ::calc_diss_watercolumn
 
     real(kind=8)                                            :: net                  
 
@@ -167,8 +169,9 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,calc_diss_water
             calc_diss2     = calc_diss_rate2  ! Dissolution rate of CaCO3 for seczoo
                
             !CH
-            calc_diss_watercolumn(k) = calc_diss
-            
+            !calc_diss_watercolumn(k) = calc_diss
+            calc_diss_watercolumn = calc_diss          
+  
             !write(*,*), SinkVel
             !write(*,*), calc_diss
             !if (mype==0) write(*,*),' sms(k,ivdet)', sms(k,ivdet)

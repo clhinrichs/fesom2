@@ -257,7 +257,7 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> ciso after 
 	do idiags = one,9
 	  LocDiags2D(idiags) = sum(diags3Dloc(1:nn,idiags) * thick(1:nn))
 	end do
-        write(*,*) 'Done with Diags'
+!        write(*,*) 'Done with Diags'
   end if
 
 end subroutine REcoM_Forcing
