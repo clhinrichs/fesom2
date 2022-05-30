@@ -33,7 +33,8 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,SinkVel,zF,PAR,
 
     real(kind=8),dimension(mesh%nl-1,bgc_num),intent(inout) :: sms                  !< Source-Minus-Sinks term
     real(kind=8),dimension(mesh%nl-1)        ,intent(in)    :: Temp                 !< [degrees C] Ocean temperature
-    real(kind=8),dimension(mesh%nl,4)        ,intent(in)    :: SinkVel
+    real(kind=8),dimension(mesh%nl,4)        ,intent(in)    :: SinkVel 
+    real(kind=8),dimension(mesh%nl-1)                                            :: svel
 
     real(kind=8),dimension(mesh%nl)          ,intent(in)    :: zF                   !< [m] Depth of fluxes
     real(kind=8),dimension(mesh%nl-1),intent(inout)         :: PAR
@@ -162,7 +163,13 @@ subroutine REcoM_sms(n,Nn,state,thick,recipthick,SurfSR,sms,Temp,SinkVel,zF,PAR,
             PhyCalc= max(tiny,state(k,iphycal)		+ sms(k,iphycal))
             DetCalc= max(tiny,state(k,idetcal)		+ sms(k,idetcal))
 
-            calc_diss      = calc_diss_rate * SinkVel(k,ivdet) /20.d0 ! Dissolution rate of CaCO3 scaled by the sinking velocity at the current depth 0.005714   !20.d0/3500.d0
+            !calc_diss      = calc_diss_rate * SinkVel(k,ivdet) /20.d0 ! Dissolution rate of CaCO3 scaled by the sinking velocity at the current depth 0.005714   !20.d0/3500.d0
+            
+            !CH test if SinkVel works
+            svel = Vdet_a * abs(zF(k)) + Vdet
+            calc_diss   = calc_diss_rate * svel(k)/20.d0
+            !end test CH
+
             calc_diss2     = calc_diss_rate2  ! Dissolution rate of CaCO3 for seczoo
 
             quota          =  PhyN / PhyC ! include variability of the N: C ratio, cellular chemical composition 
