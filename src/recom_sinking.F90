@@ -65,6 +65,14 @@ subroutine recom_sinking_new(tr_num,mesh)
         tracer_id(tr_num)==1015 ) then     !idchl
 
             Vsink = VDia
+
+    elseif(tracer_id(tr_num)==1025 .or. &  !idetz2n
+        tracer_id(tr_num)==1026 .or. &  !idetz2c
+        tracer_id(tr_num)==1027 .or. &  !idetz2si
+        tracer_id(tr_num)==1028 ) then  !idetz2calc 
+            
+            Vsink = VDet_zoo2
+
     end if
 
 !if (Vsink .lt. 0.1) return 
