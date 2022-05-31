@@ -53,8 +53,8 @@ subroutine recom(mesh)
 
   real(kind=8)               :: Sali, net, net1, net2
   real(kind=8), allocatable :: Temp(:),  zr(:), PAR(:)
-  real(kind=8),  allocatable :: C(:,:)
-  real(kind=8),  allocatable :: calc_diss_watercolumn(:) !CH
+  real(kind=8), allocatable :: C(:,:)
+  real(kind=8), allocatable :: calc_diss_watercolumn(:) !CH
 
   character(len=2)           :: tr_num_name
 #include "../associate_mesh.h"
@@ -81,8 +81,6 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> bio_fluxes'
 
 ! ======================================================================================
 !********************************* LOOP STARTS *****************************************			
-
-write(*,*) 'starting main loop'
 
   do n=1, myDim_nod2D  ! needs exchange_nod in the end
 !     if (ulevels_nod2D(n)>1) cycle 
@@ -129,7 +127,8 @@ write(*,*) 'starting main loop'
 
      !!---- Biogeochemical tracers
      C(1:nzmax,1:bgc_num) = tr_arr(1:nzmax, n, 3:num_tracers)             
-     calc_diss_watercolumn(1:nzmax)    = calc_diss3D(1:nzmax, n)               
+     !calc_diss_watercolumn(1:nzmax)    = calc_diss3D(1:nzmax, n)               
+     calc_diss_watercolumn(1:nzmax) = 0.d0 
 
      !!---- Depth of the nodes in the water column 
      zr(1:nzmax) = Z_3d_n(1:nzmax, n)                          
@@ -179,7 +178,7 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
 
      PAR3D(1:nzmax,n)             = PAR(1:nzmax) !     PAR3D(inds(1:nn))   = PAR(1:nn)
    
-     calc_diss3D(1:nzmax,n)             = calc_diss_watercolumn(1:nzmax)  
+     calc_diss3D(1:nzmax,n) = calc_diss_watercolumn(1:nzmax)  
 
      do idiags = 1,diags3d_num
        Diags3D(1:nzmax,n,idiags)  = Diags3Dloc(1:nzmax,idiags) ! 1=NPPnano, 2=NPPdia
@@ -188,10 +187,8 @@ if (recom_debug .and. mype==0) print *, achar(27)//'[36m'//'     --> REcoM_Forci
      deallocate(Diags3Dloc)
 
   end do
-write(*,*) 'Done with recom forcing in main'
 ! ======================================================================================
 !************************** EXCHANGE NODAL INFORMATION *********************************			
-write(*,*) 'starting exchange nodal info'
   do tr_num=3, bgc_num+2 
     call exchange_nod(tr_arr(:,:,tr_num))
   end do
@@ -231,7 +228,6 @@ write(*,*) 'starting exchange nodal info'
 !     call exchange_nod(Diags3D(:,:,n))	
 !  end do
 
-!write(*,*) 'Done with exhange nodal info'
 end subroutine recom
 
 ! ======================================================================================
@@ -260,7 +256,6 @@ subroutine bio_fluxes(mesh)
   real(kind=WP)                     :: ralk, net
   type(t_mesh), intent(in) , target :: mesh
 #include "../associate_mesh.h"
- write(*,*) 'bio_flux before alk_restore' 
 !___________________________________________________________________
 ! on freshwater inflow/outflow or virtual alkalinity:
   ! 1. In zlevel & zstar the freshwater flux is applied in the update of the 
@@ -304,7 +299,6 @@ subroutine bio_fluxes(mesh)
 !     call integrate_nod(virtual_alk, net)
 !     virtual_alk=virtual_alk-net/ocean_area
 !  end if
-write(*,*) 'Starting with integrate node relax_alk'
 
   ! 3. restoring to Alkalinity climatology
   call integrate_nod(relax_alk, net, mesh)
@@ -322,5 +316,4 @@ write(*,*) 'Starting with integrate node relax_alk'
 !     write(*,*) '____________________________________________________________'
 !     write(*,*) ' --> relax_alk,  = ', relax_alk
 !  endif
-write(*,*) 'done with subroutine bio fluxes'
 end subroutine bio_fluxes

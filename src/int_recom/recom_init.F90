@@ -67,6 +67,7 @@ subroutine recom_init(mesh)
     allocate(GlodPCO2surf(node_size))
     allocate(GlodecayBenthos(node_size,benthos_num))
     allocate(PAR3D(nl-1,node_size))
+    allocate(calc_diss3D(nl-1,node_size))
     allocate(DenitBen(node_size)) 
     allocate(Benthos(node_size,benthos_num))
     allocate(LocBenthos(benthos_num))
@@ -179,8 +180,7 @@ end if
     end if  
 
     PAR3D(:,:) = 0.d0
-    allocate(calc_diss3D(nl-1,node_size))                   !CH
-    calc_diss3D(:,:)          = 0.d0
+    calc_diss3D(:,:) = 0.d0
 
     DenitBen(:) = 0.d0
 
